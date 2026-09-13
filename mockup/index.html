@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《致你》Dear You — 产品概念预览</title>
+<style>
+  :root{
+    --paper:#fbf8f2; --ink:#2f2a24; --muted:#8a8076; --line:#e6ddd0;
+    --seal:#b5432f; --sand:#f3e7d3; --tag:#ece4d6; --bg:#efe9df;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);padding:44px 24px 60px;
+    font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
+  .page-title{text-align:center;font-size:22px;font-family:"Songti SC","STSong",serif;letter-spacing:2px;}
+  .page-sub{text-align:center;color:var(--muted);font-size:12.5px;margin-top:10px;margin-bottom:40px;line-height:1.8;}
+  .frames{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .frame-wrap{width:320px;}
+  .frame{width:320px;height:660px;background:var(--paper);border-radius:36px;overflow:hidden;position:relative;
+    border:1px solid #e2d8c8;box-shadow:0 14px 44px rgba(60,45,30,.16);}
+  .screen{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;}
+  .screen::-webkit-scrollbar{display:none;}
+  .statusbar{display:flex;justify-content:space-between;padding:12px 24px 0;font-size:11px;color:var(--muted);}
+  .caption{margin-top:14px;text-align:center;font-size:12px;color:var(--muted);line-height:1.7;}
+  .caption b{color:#6b6154;}
+
+  /* ---------- 屏 1 首页 ---------- */
+  .home{padding:26px 24px 20px;display:flex;flex-direction:column;min-height:calc(100% - 30px);}
+  .brand{display:flex;align-items:center;gap:9px;margin-bottom:34px;}
+  .seal{background:var(--seal);color:#fff;font-family:"Songti SC",serif;font-size:13px;padding:4px 7px;border-radius:6px;letter-spacing:2px;}
+  .brand-en{color:var(--muted);font-size:11.5px;letter-spacing:1.5px;}
+  .greet{font-family:"Songti SC","STSong",serif;font-size:27px;line-height:1.5;font-weight:600;letter-spacing:1px;}
+  .greet-sub{color:var(--muted);font-size:12.5px;margin-top:12px;line-height:1.8;}
+  .entries{margin-top:30px;display:flex;flex-direction:column;gap:12px;}
+  .entry{display:flex;align-items:center;gap:14px;text-align:left;background:#fff;border:1px solid var(--line);
+    border-radius:18px;padding:16px;color:var(--ink);cursor:pointer;transition:transform .15s;}
+  .entry:hover{transform:translateY(-2px);}
+  .entry .ico{font-size:22px;width:30px;text-align:center;}
+  .entry b{font-weight:600;font-size:14.5px;display:block;}
+  .entry i{font-style:normal;color:var(--muted);font-size:11.5px;}
+  .to-river{margin-top:30px;text-align:center;color:var(--seal);font-size:13px;letter-spacing:1px;}
+  .no-chat{margin-top:auto;padding-top:26px;text-align:center;color:var(--muted);font-size:11.5px;line-height:2;}
+
+  /* ---------- 屏 2 河流 ---------- */
+  .river{padding:22px 20px 34px;}
+  .river h2{font-family:"Songti SC",serif;font-size:21px;letter-spacing:1px;}
+  .river-sub{color:var(--muted);font-size:11.5px;margin:7px 0 20px;}
+  .stream{border-left:2px solid var(--line);margin-left:5px;padding-left:17px;display:flex;flex-direction:column;gap:16px;}
+  .when{font-size:11px;color:var(--muted);margin-bottom:7px;letter-spacing:1px;}
+  .when i{font-style:normal;color:var(--seal);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 2px 8px rgba(70,55,40,.05);}
+  .fresh .card{border-color:#e5c49e;box-shadow:0 5px 18px rgba(197,120,60,.16);}
+  .photo{height:104px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:12px;letter-spacing:2px;margin-bottom:10px;}
+  .g1{background:linear-gradient(135deg,#f2a65a,#c2643b);}
+  .g2{background:linear-gradient(135deg,#8fb59b,#4f7a63);}
+  .g3{background:linear-gradient(135deg,#a9b8d8,#5f6f96);}
+  .g4{background:linear-gradient(135deg,#d9a6b0,#9c5f6e);}
+  .ai-see{font-size:13px;line-height:1.75;}
+  .ai-label{color:var(--seal);font-size:10.5px;border:1px solid var(--seal);border-radius:4px;padding:1px 5px;margin-right:7px;white-space:nowrap;}
+  .tags{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+  .tags span{background:var(--tag);color:#6b6154;font-size:10.5px;border-radius:10px;padding:2px 9px;}
+  .tags .emo{background:#f6e2dc;color:#a24a38;}
+
+  /* ---------- 屏 3 信件 ---------- */
+  .letter{padding:22px 26px 44px;font-family:"Songti SC","STSong",serif;}
+  .letter-meta{font-size:11px;color:var(--muted);letter-spacing:1.5px;}
+  .salute{font-size:27px;margin:16px 0 20px;letter-spacing:3px;}
+  .salute em{font-style:normal;color:var(--seal);border-bottom:2px solid var(--seal);padding-bottom:3px;}
+  .lp{font-size:14.5px;line-height:2.05;margin-bottom:12px;letter-spacing:.4px;}
+  .quote-card{background:var(--sand);border:1px dashed #d9b98c;border-radius:14px;padding:11px 12px;
+    display:flex;gap:11px;align-items:center;margin:14px 0;}
+  .quote-thumb{width:52px;height:52px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:20px;background:linear-gradient(135deg,#f2a65a,#c2643b);}
+  .quote-txt{font-size:12px;line-height:1.65;}
+  .quote-txt b{display:block;font-size:11.5px;color:#8a5a2b;margin-bottom:3px;letter-spacing:1px;}
+  .discover{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin:14px 0;}
+  .discover h4{font-size:11.5px;color:var(--seal);letter-spacing:3px;margin-bottom:10px;}
+  .d-row{font-size:12.5px;line-height:1.75;margin-bottom:9px;display:flex;gap:9px;}
+  .d-row:last-child{margin-bottom:0;}
+  .d-tag{flex:none;font-size:10px;border:1px solid #d8c9b2;border-radius:6px;padding:1px 7px;color:#8a7a5e;height:fit-content;margin-top:3px;letter-spacing:1px;}
+  .sign{text-align:right;font-size:14.5px;line-height:2;margin-top:8px;}
+  .stickers{display:flex;gap:8px;margin-top:24px;}
+  .sticker{flex:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 4px;
+    font-size:12px;color:var(--ink);cursor:pointer;font-family:inherit;transition:all .15s;}
+  .sticker:hover,.sticker.on{background:var(--sand);border-color:#d9b98c;}
+  .sticker-reply{margin-top:12px;font-size:12.5px;color:var(--seal);min-height:20px;text-align:center;letter-spacing:.5px;}
+  .channels{margin-top:26px;border-top:1px dashed var(--line);padding-top:16px;
+    font-size:11.5px;color:var(--muted);text-align:center;line-height:2;}
+  .channels b{color:var(--ink);}
+  .fade-in{animation:fi .7s ease both;}
+  @keyframes fi{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:none;}}
+  .caret::after{content:"▏";color:var(--seal);animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* ---------- 屏 4 送达 ---------- */
+  .deliver{padding:22px 20px 34px;display:flex;flex-direction:column;gap:16px;}
+  .deliver h2{font-family:"Songti SC",serif;font-size:21px;letter-spacing:1px;}
+  .deliver-sub{color:var(--muted);font-size:11.5px;margin-top:-8px;}
+  .dlv-label{font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:7px;}
+  .dlv-card{border-radius:16px;padding:14px;border:1px solid var(--line);background:#fff;}
+  .wx{background:#f5f8f4;border-color:#dbe6d9;}
+  .wx .t{font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline;}
+  .wx .t span{color:var(--muted);font-weight:400;font-size:10.5px;}
+  .wx .p{font-size:12px;color:#5b6659;margin-top:7px;line-height:1.75;}
+  .mail .s{font-size:13px;font-weight:600;}
+  .mail .from{font-size:11px;color:var(--muted);margin-top:3px;}
+  .mail .p{font-size:12px;color:#6d655a;margin-top:9px;line-height:1.75;}
+  .env{background:#e9ddc4;border-color:#d6c6a4;}
+  .env-inner{border:1px dashed #b9a67e;border-radius:10px;padding:18px 14px;position:relative;min-height:132px;}
+  .stamp{position:absolute;top:10px;right:10px;width:42px;height:50px;background:#fdfaf3;border:1px dashed #c9b892;
+    border-radius:4px;font-size:9px;color:#a08d63;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.4;}
+  .envseal{background:var(--seal);color:#fff;font-family:"Songti SC",serif;width:42px;height:42px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:1px;}
+  .addr{margin-top:14px;font-size:11.5px;color:#7a6a48;line-height:2.1;border-bottom:1px solid #c9b892;width:72%;}
+  .page-foot{margin-top:44px;text-align:center;color:#a99e8f;font-size:11.5px;line-height:2;}
+</style>
+</head>
+<body>
+
+<div class="page-title">《致你》 Dear You · 产品概念预览</div>
+<div class="page-sub">没有聊天框的陪伴 AI · 交素材 → 河流 → 收到信<br>点开第三屏信纸上的贴纸试试 · 素材均为占位示意</div>
+
+<div class="frames">
+
+  <!-- ============ 屏 1:首页 ============ -->
+  <div class="frame-wrap">
+    <div class="frame"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="home">
+        <div class="brand"><span class="seal">致你</span><span class="brand-en">Dear You</span></div>
+        <h1 class="greet">今天,<br>有什么想交给我的?</h1>
+        <p class="greet-sub">随手一拍、一句话,都算数。<br>交给我就好,不用写日记。</p>
+        <div class="entries">
+          <button class="entry"><span class="ico">📷</span><div><b>拍张照片</b><i>此刻的画面</i></div></button>
+          <button class="entry"><span class="ico">✍️</span><div><b>写几句话</b><i>此刻的心情</i></div></button>
+          <button class="entry"><span class="ico">🎬</span><div><b>传段视频</b><i>此刻的动静</i></div></button>
+        </div>
+        <div class="to-river">↓ 去看看你的河流</div>
+        <p class="no-chat">这里没有聊天框。<br>它不问你问题,只是记着。</p>
+      </div>
+    </div></div>
+    <div class="caption"><b>① 首页</b>——没有聊天框,只有"交给它"的三个入口</div>
+  </div>
+
+  <!-- ============ 屏 2:河流 ============ -->
+  <div class="frame-wrap">
+    <div class="frame"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="river">
+        <h2>你的河流</h2>
+        <p class="river-sub">过去 30 天,它都记得</p>
+        <div class="stream">
+
+          <div class="node fresh">
+            <div class="when"><i>刚刚</i> · 照片流入</div>
+            <div class="card">
+              <div class="photo g1">傍晚 · 操场</div>
+              <div class="ai-see"><span class="ai-label">它看见</span>傍晚的操场,你跑了 5 公里,比上周多。</div>
+              <div class="tags"><span>跑步</span><span>傍晚</span><span class="emo">心情 · 满足</span></div>
+            </div>
+          </div>
+
+          <div class="node">
+            <div class="when">昨天 · 文字</div>
+            <div class="card">
+              <div class="ai-see"><span class="ai-label">它看见</span>"开完会突然很累,但又有点释然。"——今天你提到了"释然"。</div>
+              <div class="tags"><span>工作</span><span class="emo">心情 · 释然</span></div>
+            </div>
+          </div>
+
+          <div class="node">
+            <div class="when">周三 · 照片</div>
+            <div class="card">
+              <div class="photo g2">厨房 · 第一次做红烧肉</div>
+              <div class="ai-see"><span class="ai-label">它看见</span>厨房里的第一次尝试。锅铲和糖色,都记下了。</div>
+              <div class="tags"><span>做饭</span><span>第一次</span><span class="emo">心情 · 得意</span></div>
+            </div>
+          </div>
+
+          <div class="node">
+            <div class="when">上周 · 视频</div>
+            <div class="card">
+              <div class="photo g3">客厅 · 猫追光点</div>
+              <div class="ai-see"><span class="ai-label">它看见</span>18 秒的视频里,它跳了 3 次。你笑了。</div>
+              <div class="tags"><span>猫</span><span class="emo">心情 · 开心</span></div>
+            </div>
+          </div>
+
+          <div class="node">
+            <div class="when">更早 · 文字</div>
+            <div class="card">
+              <div class="ai-see"><span class="ai-label">它看见</span>"想把日子过慢一点。"——这一句,它一直记着。</div>
+              <div class="tags"><span>愿望</span><span class="emo">心情 · 平静</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div></div>
+    <div class="caption"><b>② 河流</b>——它认得每一样素材,并按时间收好;新素材"刚刚"流入</div>
+  </div>
+
+  <!-- ============ 屏 3:信件 ============ -->
+  <div class="frame-wrap">
+    <div class="frame"><div class="screen letter-screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="letter">
+        <div class="letter-meta">2026 年 9 月 11 日 · 第 1 封信</div>
+        <div class="salute">致 <em>你</em></div>
+        <div id="seq"></div>
+        <div class="stickers" id="stickers" style="display:none">
+          <button class="sticker" data-r="我也记得那一天。">被戳中了</button>
+          <button class="sticker" data-r="好。周六晚上,我把这周的事讲给你听。">多讲点</button>
+          <button class="sticker" data-r="对不起,我记错了。你告诉我,我就改。">你记错了</button>
+        </div>
+        <div class="sticker-reply" id="stickerReply"></div>
+        <div class="channels" id="channels" style="display:none">
+          这封信也可以找到你:<b>微信</b> · <b>邮件</b> · <b>实体信</b><br>→ 见第 ④ 屏
+        </div>
+      </div>
+    </div></div>
+    <div class="caption"><b>③ 信件(核心)</b>——被引用的记忆 + 三类"发现" + 贴纸回应</div>
+  </div>
+
+  <!-- ============ 屏 4:送达 ============ -->
+  <div class="frame-wrap">
+    <div class="frame"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="deliver">
+        <h2>信,怎么找到你</h2>
+        <p class="deliver-sub">概念预览 · 信主动来找你,不用你打开 App</p>
+
+        <div>
+          <div class="dlv-label">微 信 推 送</div>
+          <div class="dlv-card wx">
+            <div class="t">致你 · 来信了 <span>21:30</span></div>
+            <div class="p">今天的信到了 ✉️<br>「傍晚的操场、慢慢的日子,还有一件小事想告诉你……」<br>点击读信 →</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="dlv-label">邮 件</div>
+          <div class="dlv-card mail">
+            <div class="s">致你 · 9 月 11 日的信</div>
+            <div class="from">致你 &lt;letters@zhini.app&gt;</div>
+            <div class="p">今天傍晚,你把操场的照片交给了我。我记得上周你只是随口提过一句"想重新开始跑步"。这一次,你没有只说说而已……</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="dlv-label">实 体 信</div>
+          <div class="dlv-card env">
+            <div class="env-inner">
+              <div class="envseal">致你</div>
+              <div class="stamp">邮票<br>·这里·</div>
+              <div class="addr">写给:你<br>寄自:记得你生活的人</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div></div>
+    <div class="caption"><b>④ 送达</b>——信找到你的三种方式(概念,演示为静态样式)</div>
+  </div>
+
+</div>
+
+<div class="page-foot">示意原型 · 素材为占位图 · 数据均为演示内容<br>《致你》Dear You — 2026-09-11</div>
+
+<script>
+(function(){
+  var screen=document.querySelector('.letter-screen');
+  var seq=document.getElementById('seq');
+  var stickers=document.getElementById('stickers');
+  var channels=document.getElementById('channels');
+  var reply=document.getElementById('stickerReply');
+  var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms);});};
+  function toBottom(){screen.scrollTop=screen.scrollHeight;}
+
+  async function typeText(str,cls){
+    var p=document.createElement('p');
+    p.className='lp '+(cls||'')+' caret';
+    seq.appendChild(p);
+    for(var i=0;i<str.length;i++){
+      p.textContent+=str[i];
+      toBottom();
+      await sleep(26);
+    }
+    p.classList.remove('caret');
+  }
+  function addNode(html){
+    var d=document.createElement('div');
+    d.innerHTML=html.trim();
+    seq.appendChild(d.firstChild);
+    toBottom();
+  }
+
+  async function run(){
+    try{
+      await sleep(600);
+      await typeText('今天傍晚,你把操场的照片交给了我——');
+      addNode('<div class="quote-card fade-in"><div class="quote-thumb">🏃</div>'+
+        '<div class="quote-txt"><b>记忆 · 傍晚的操场</b>跑了 5 公里,比上周多了 2 公里。点它,可以回到河流里的这一刻 ↗</div></div>');
+      await sleep(500);
+      await typeText('我记得上周你只是随口提过一句"想重新开始跑步"。这一次,你没有只说说而已。');
+      await sleep(400);
+      addNode('<div class="discover fade-in"><h4>它 发 现 的</h4>'+
+        '<div class="d-row"><span class="d-tag">对比</span><span>上个月你只跑了 2 次,这个月已经 6 次了。</span></div>'+
+        '<div class="d-row"><span class="d-tag">回响</span><span>8 月你写下"想把日子过慢一点",这两周,你的文字里出现了 11 次"慢慢"。</span></div>'+
+        '<div class="d-row"><span class="d-tag">缺失</span><span>你的吉他,停在 42 天前。它还等你。</span></div></div>');
+      await sleep(500);
+      await typeText('日子大多平淡,但你不是。');
+      await typeText('明天见。', 'sign');
+      await typeText('—— 致你', 'sign');
+      stickers.style.display='flex';
+      stickers.classList.add('fade-in');
+      channels.style.display='block';
+      channels.classList.add('fade-in');
+      toBottom();
+    }catch(e){
+      seq.innerHTML='<p class="lp">今天傍晚,你把操场的照片交给了我。我记得上周你只是随口提过一句"想重新开始跑步"。这一次,你没有只说说而已。</p>'+
+      '<p class="lp">日子大多平淡,但你不是。明天见。—— 致你</p>';
+      stickers.style.display='flex';channels.style.display='block';
+    }
+  }
+
+  stickers.addEventListener('click',function(ev){
+    var b=ev.target.closest('.sticker');
+    if(!b)return;
+    stickers.querySelectorAll('.sticker').forEach(function(s){s.classList.remove('on');});
+    b.classList.add('on');
+    reply.textContent=b.dataset.r;
+    reply.classList.add('fade-in');
+    toBottom();
+  });
+
+  run();
+})();
+</script>
+</body>
+</html>

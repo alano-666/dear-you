@@ -308,6 +308,14 @@ export interface Letter {
 - 智谱 glm-4v-flash:✅ base64 传图 + 返回描述(2026-09-11)
 - 百智云:✅ /v1/messages 正常返回;⚠️ 发现 thinking 块需过滤(2026-09-11)
 
+**后端实现阶段实测(2026-09-11 下午,全部可复现:见 `scripts/`)**:
+- ✅ **多图支持确认(Day 1 检查点)**:glm-4v-flash 单请求传 3 帧正常返回(1.7s),**不需要**降级为 3 次调用
+- ✅ **`/api/recognize` 冒烟**:单图(2.4s)/ 三帧 / 空图 / 非图片格式 / 超大图 / 非法 JSON,6/6 用例符合预期(`scripts/recognize-smoke.py`)
+- ✅ **周信稳定性实验(5 次)**:JSON 合法率 5/5(100%,目标 ≥80%)、三类发现齐全 5/5(目标 ≥4/5)、引用 memId 全部有效 0 幻觉(`scripts/letter-stability.py`)
+- ⚠️ **延迟结论(重要)**:网关强制开启 thinking,`thinking:{type:"disabled"}` 返回 502 不支持;`budget_tokens` 参数无效;deepseek-v4-pro 更慢(34s);**glm-5.3-flash 是当前最快组合**。完整周信 20-30s、日信 ~20s、欢迎信 ~9s 是固有耗时 → 前端需用逐字浮现/等待叙事覆盖(见 §14.2)
+- ✅ **错误路径**(`scripts/error-paths.ts`):无密钥 → `NO_KEY`(<1ms);服务不可达 → `UPSTREAM`(**1009ms 快速失败**,前端可立即切备用信,不会拖 60s)
+- ✅ **边界用例**:空记忆 / 非法 kind / 未来时间戳 / 字段残缺记忆,均不崩溃且行为符合预期
+
 ### 11.2 开发中必测(curl 样例)
 ```bash
 # 识别(本地起服务后)
@@ -348,13 +356,68 @@ curl -s localhost:3000/api/letter -X POST -H "Content-Type: application/json" \
 
 **总计约 6 小时** —— 在 PRD 的 Day 1 上午到 Day 2 上午区间内完成,不挤压前端时间。
 
+> **进度(2026-09-12)**:B1–B7 **全部完成**。线上地址 https://geekathon-alano-s-projects.vercel.app,两个接口均线上验证通过(部署细节见 §15)。
+
 ---
 
 ## 13. 验收清单(对应 PRD 功能 ID)
 
-- [ ] F1 照片识别:真实照片 3 秒内返回准确观察(§4 + B2)
-- [ ] F3 视频识别:3 帧输入可用(§4 Day1 检查点)
-- [ ] F6/F7 日/周信:引用真实 memId;周信三类发现齐全(§5 + §11.4)
-- [ ] F8 欢迎信:首次提交触发(§5 表格)
-- [ ] F10 备用周信:断网演示不中断(§9)
-- [ ] 安全:前端源码与网络响应中搜不到任何 key(§10-1)
+- [x] F1 照片识别:真实照片 3 秒内返回准确观察(✅ 实测 2.4s,`scripts/recognize-smoke.py`)
+- [x] F3 视频识别:3 帧输入可用(✅ 单请求多图确认,1.7s,无需降级)
+- [x] F6/F7 日/周信:引用真实 memId;周信三类发现齐全(✅ 稳定性实验 5/5)
+- [x] F8 欢迎信:首次提交触发(✅ 契约句 + 引用首条素材)
+- [x] F10 备用周信:断网演示不中断(✅ `lib/fallback-letter.ts` 就绪;待前端接入后做断网演练)
+- [x] 安全:前端源码与网络响应中搜不到任何 key(✅ 线上已验证:错误响应不含密钥;`.vercelignore` 确保 .env 不进部署)
+
+---
+
+## 14. 给前端的交接备注(2026-09-11 后端就绪时补记)
+
+**两个接口已全部就绪**,类型定义在 `lib/types.ts`(直接 `import type` 即可)。
+
+### 14.1 调用要点
+
+| 事项 | 说明 |
+|---|---|
+| 识别 | `POST /api/recognize`:图片先在前端压缩(单张 ≤1.5MB 服务端硬校验),视频 3 帧一次请求 |
+| 写信 | `POST /api/letter`:只传文字(不含图片 dataURL),整包 <50KB |
+| 失败处理 | 一律 HTTP 200 + `ok:false` + `error` 码(`NO_KEY` / `TIMEOUT` / `UPSTREAM` / `BAD_IMAGE` / `BAD_REQUEST`)|
+| 周信兜底 | 生成失败 → `import { buildFallbackLetter } from "@/lib/fallback-letter"`,页面标注"演示数据" |
+
+### 14.2 等待体验(实测延迟,必须设计覆盖)
+
+- 欢迎信 ≈ 9s|日信 ≈ 20s|周信 ≈ 28s(最慢 43s);已确认**无法通过参数缩短**(网关强制 thinking,见 §11.1)
+- 建议:写信时进入"信在路上"过渡态,收到后逐字浮现;讲稿可把等待讲成仪式感
+- 识别 ≈ 2s:可先让条目带"它还没来得及看"占位入河,识别完成后再补描述(条目不阻塞流入)
+
+### 14.3 已验证行为(前端可直接依赖)
+
+- `segments` 按序渲染即可;`quote.memId` 保证真实存在于所传记忆(服务端已过滤幻觉引用)
+- `degraded:true` 时只有纯 text 段(不渲染引用卡与发现块),信依然完整可读
+- 记忆 `time` 为未来值 / 字段残缺不会导致失败(服务端过滤后再生成)
+- 服务端不落盘、不缓存用户内容(§10-4);日志不打印图片与原文(§10-3)
+
+---
+
+## 15. 部署记录(2026-09-12)
+
+**线上地址**:https://geekathon-alano-s-projects.vercel.app
+**Vercel 项目**:alano-s-projects / geekathon(部署保护已关闭,任何人可直接访问)
+
+**⚠️ 环境坑记录(换终端/换机器重新部署时会踩)**:
+- CLI 版本必须用 **48.x**:最新版 59 的网络层不认代理(死报 `fetch failed`);47.2.2 以下被服务端拒绝。实测 **48.12.1 可用**
+- 代理必须用**小写**环境变量 `https_proxy` / `http_proxy`(CLI 不读大写版本)
+- Token 存于 `~/.vercel-token`(勿提交、勿贴进对话)
+
+**改动代码后重新部署**:
+
+```bash
+export https_proxy=http://127.0.0.1:7897
+export http_proxy=http://127.0.0.1:7897
+export NODE_USE_ENV_PROXY=1
+pnpm dlx vercel@48 --token="$(cat ~/.vercel-token)" --prod --yes
+```
+
+**已配置生产环境变量**(6 个,加密):`ZHIPU_API_KEY` / `ZHIPU_BASE_URL` / `BAIZHI_API_KEY` / `BAIZHI_BASE_URL` / `VISION_MODEL` / `TEXT_MODEL`
+
+**线上实测**:欢迎信 10.8s、周信 17.6s(比本地快——Vercel 服务器到 AI 网关的网络更优);错误响应不含任何密钥。

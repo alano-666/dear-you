@@ -1,0 +1,8 @@
+# 密钥文件永不进入部署(§10-1 安全红线)
+.env
+.env.local
+
+# 非运行时文件(不参与 Next.js 构建,减小上传体积)
+docs/
+mockup/
+scripts/

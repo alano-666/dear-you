@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 海 */
+  --sea-deep: #14304b;
+  --sea: #3a6893;
+  --sea-mist: #e9f1f7;
+  /* 纸 */
+  --paper: #fdfcfa;
+  --paper-warm: #f6f3ec;
+  --ink-soft: #5c6c7c;
+  /* 晨光(仅用于"发现") */
+  --dawn: #d98d5f;
+
+  --background: var(--paper);
+  --foreground: var(--sea-deep);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-sea-deep: var(--sea-deep);
+  --color-sea: var(--sea);
+  --color-sea-mist: var(--sea-mist);
+  --color-paper: var(--paper);
+  --color-paper-warm: var(--paper-warm);
+  --color-ink-soft: var(--ink-soft);
+  --color-dawn: var(--dawn);
+
+  --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  /* 信件正文:宋体承载"书写"的质感 */
+  --font-letter: Georgia, "Songti SC", "STSong", "SimSun", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
 }
 
 body {
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 键盘可达性 */
+:focus-visible {
+  outline: 2px solid var(--sea);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 新记忆"流入"河流(响应用户的提交动作) */
+@keyframes flow-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 尊重系统的"减少动态效果" */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
