@@ -1,7 +1,9 @@
 # 《致你》Dear You — Demo
 
+**🌊 在线体验**:https://geekathon-alano-s-projects.vercel.app
+
 没有聊天框的陪伴型 AI:用户提交照片/视频/文字,AI 观察、记忆,以信件回应。
-2 天冲刺的黑客松 Demo。产品规格见 `docs/PRD-致你-demo.md`,后端施工图见 `docs/BACKEND-致你-demo.md`。
+2 天冲刺的黑客松 Demo。项目介绍见 `docs/项目介绍-致你.md`,产品规格见 `docs/PRD-致你-demo.md`,后端施工图见 `docs/BACKEND-致你-demo.md`。
 
 ## 快速开始
 
